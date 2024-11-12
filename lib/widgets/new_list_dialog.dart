@@ -7,7 +7,8 @@ import 'custom_text_form_field.dart';
 class NewListDialog extends StatefulWidget {
   final TextEditingController controller;
   final GlobalKey<FormState> formKey;
-  const NewListDialog({super.key, required this.controller, required this.formKey});
+  final Function(String) callback;
+  const NewListDialog({super.key, required this.controller, required this.formKey, required this.callback});
 
   @override
   State<NewListDialog> createState() => _NewListDialogState();
@@ -24,8 +25,8 @@ class _NewListDialogState extends State<NewListDialog> {
 
   void _submit() {
     if (widget.formKey.currentState!.validate()) {
-      print("Add");
       Navigator.of(context).pop();
+      widget.callback(widget.controller.text);
     }
   }
 

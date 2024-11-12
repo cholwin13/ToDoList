@@ -47,64 +47,71 @@ class _HomeScreenState extends State<HomeScreen> {
         {'name': 'myo lwin', 'phNo': '09780370347'}
       ]
     },
-    {
-      'id': 2,
-      'value': 2,
-      'icon': const Icon(
-        Icons.format_list_bulleted,
-        color: AppColors.primaryColor,
-      ),
-      'title': 'Personal',
-      'details': [
-        {'name': 'CL Personal', 'phNo': '09780370347'},
-        {'name': 'myo lwin', 'phNo': '09780370347'}
-      ]
-    },
-    {
-      'id': 3,
-      'value': 3,
-      'icon': const Icon(
-        Icons.format_list_bulleted,
-        color: AppColors.primaryColor,
-      ),
-      'title': 'Shopping',
-      'listCount': '1',
-      'details': [
-        {'name': 'CL Shopping', 'phNo': '09780370347'},
-        {'name': 'myo lwin', 'phNo': '09780370347'}
-      ]
-    },
-    {
-      'id': 4,
-      'value': 4,
-      'icon': const Icon(
-        Icons.format_list_bulleted,
-        color: AppColors.primaryColor,
-      ),
-      'title': 'Wishlist',
-      'details': [
-        {'name': 'CL Wishlist', 'phNo': '09780370347'},
-        {'name': 'myo lwin', 'phNo': '09780370347'}
-      ]
-    },
-    {
-      'id': 5,
-      'value': 5,
-      'icon': const Icon(
-        Icons.format_list_bulleted,
-        color: AppColors.primaryColor,
-      ),
-      'title': 'Work',
-      'listCount': '1',
-      'details': [
-        {'name': 'CL Work', 'phNo': '09780370347'},
-        {'name': 'myo lwin', 'phNo': '09780370347'}
-      ]
-    },
+    // {
+    //   'id': 2,
+    //   'value': 2,
+    //   'icon': const Icon(
+    //     Icons.format_list_bulleted,
+    //     color: AppColors.primaryColor,
+    //   ),
+    //   'title': 'Personal',
+    //   'details': [
+    //     {'name': 'CL Personal', 'phNo': '09780370347'},
+    //     {'name': 'myo lwin', 'phNo': '09780370347'}
+    //   ]
+    // },
+    // {
+    //   'id': 3,
+    //   'value': 3,
+    //   'icon': const Icon(
+    //     Icons.format_list_bulleted,
+    //     color: AppColors.primaryColor,
+    //   ),
+    //   'title': 'Shopping',
+    //   'listCount': '1',
+    //   'details': [
+    //     {'name': 'CL Shopping', 'phNo': '09780370347'},
+    //     {'name': 'myo lwin', 'phNo': '09780370347'}
+    //   ]
+    // },
+    // {
+    //   'id': 4,
+    //   'value': 4,
+    //   'icon': const Icon(
+    //     Icons.format_list_bulleted,
+    //     color: AppColors.primaryColor,
+    //   ),
+    //   'title': 'Wishlist',
+    //   'details': [
+    //     {'name': 'CL Wishlist', 'phNo': '09780370347'},
+    //     {'name': 'myo lwin', 'phNo': '09780370347'}
+    //   ]
+    // },
+    // {
+    //   'id': 5,
+    //   'value': 5,
+    //   'icon': const Icon(
+    //     Icons.format_list_bulleted,
+    //     color: AppColors.primaryColor,
+    //   ),
+    //   'title': 'Work',
+    //   'listCount': '1',
+    //   'details': [
+    //     {'name': 'CL Work', 'phNo': '09780370347'},
+    //     {'name': 'myo lwin', 'phNo': '09780370347'}
+    //   ]
+    // },
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _changeListName('All List');
+  }
+
+  @override
   Widget build(BuildContext context) {
+    print(popupItemsList);
     return Scaffold(
       appBar: AppBar(
         title: PopupMenuButton(
@@ -113,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
               _changeListName(val);
             }
           },
-          initialValue: selectedPopUpName,
+          initialValue: 'All List',
           itemBuilder: (context) {
             return [
               for (int i = 0; i < popupItemsList.length; i++)
@@ -135,9 +142,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     trailing: popupItemsList[i]['listCount'] != null
                         ? Text(
                             popupItemsList[i]['listCount'],
-                            style: TextStyle(color: AppColors.errorColor),
+                            style: const TextStyle(color: AppColors.errorColor),
                           )
-                        : Text(''),
+                        : const Text(''),
                   ),
                 ),
               const PopupMenuItem(
@@ -229,13 +236,31 @@ class _HomeScreenState extends State<HomeScreen> {
   _changeListName(String listName) {
     setState(() {
       selectedPopUpName = listName;
+      if(popupItemsList.first['title'] == listName){
+        selectedDetails = popupItemsList.first['details'] ?? [];
+      }
     });
   }
 
   _showDialog(BuildContext context) {
     showDialog(
         context: context,
-        builder: (BuildContext context) => NewListDialog(controller: newListController, formKey: formKey)
+        builder: (BuildContext context) => NewListDialog(
+            controller: newListController,
+            formKey: formKey,
+          callback: (String newListName) {
+            popupItemsList.add({
+              'id': popupItemsList.length + 1,
+              'value': 0,
+              'icon': const Icon(
+                Icons.format_list_bulleted,
+                color: AppColors.primaryColor,
+              ),
+              'title': newListName,
+              'details': []
+            },);
+        },
+        )
     );
   }
 }
