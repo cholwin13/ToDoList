@@ -1,6 +1,6 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:to_do_list/pages/home_screen.dart';
+import 'package:to_do_list/navigation/custom_navigation_route.dart';
 import 'package:to_do_list/resources/app_images.dart';
 import 'package:to_do_list/resources/app_colors.dart';
 
@@ -22,8 +22,7 @@ class MyApp extends StatelessWidget {
       ),
       home: AnimatedSplashScreen(
         splash: Image.asset(AppImages.splashImage),
-        nextScreen: HomeScreen(),
-
+        nextScreen: const MainScreen(),
         splashTransition: SplashTransition.fadeTransition,
         duration: 1000,
         backgroundColor: AppColors.primaryColor,
@@ -31,3 +30,16 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+class MainScreen extends StatelessWidget {
+  const MainScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp.router(
+     routerConfig: CustomNavigationRoute.router,
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+

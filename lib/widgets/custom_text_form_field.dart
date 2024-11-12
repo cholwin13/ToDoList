@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:to_do_list/resources/app_colors.dart';
+import 'package:to_do_list/resources/app_dimens.dart';
 
 class CustomTextFormFieldWidget extends StatelessWidget {
   final Function(String)? onChanged;
@@ -48,24 +49,24 @@ class CustomTextFormFieldWidget extends StatelessWidget {
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.all(10.0),
         enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(
+          borderSide: const BorderSide(
               color: AppColors.grayColor),
           borderRadius: BorderRadius.circular(5.0),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(
+          borderSide: const BorderSide(
               color: AppColors.grayColor
           ),
           borderRadius: BorderRadius.circular(5.0),
         ),
         errorBorder: OutlineInputBorder(
-          borderSide: BorderSide(
+          borderSide: const BorderSide(
               color: AppColors.errorColor),
           borderRadius: BorderRadius.circular(5.0),
         ),
-        errorStyle: const TextStyle(fontSize: 0),
+        errorStyle: const TextStyle(fontSize: AppDimens.fontMedium),
         focusedErrorBorder: OutlineInputBorder(
-          borderSide: BorderSide(
+          borderSide: const BorderSide(
               color: AppColors.errorColor),
           borderRadius: BorderRadius.circular(5.0),
         ),
