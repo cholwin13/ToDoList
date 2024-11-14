@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:to_do_list/navigation/custom_navigation_route.dart';
 import 'package:to_do_list/resources/app_colors.dart';
 import 'package:to_do_list/resources/app_dimens.dart';
 import 'package:to_do_list/widgets/list_view_widget.dart';
+import 'package:to_do_list/widgets/new_task_route_parameters.dart';
 
 import '../widgets/new_list_dialog.dart';
 
@@ -18,100 +20,66 @@ class _HomeScreenState extends State<HomeScreen> {
   TextEditingController newListController = TextEditingController();
   List selectedDetails = [];
 
-  List popupItemsList = [
+  static const Icon defaultIcon = Icon(
+    Icons.home,
+    color: AppColors.primaryColor,
+  );
+
+  List<Map<String, dynamic>> popupItemsList = [
     {
       'id': 0,
-      'value': 0,
       'icon': const Icon(
         Icons.home,
         color: AppColors.primaryColor,
       ),
       'title': 'All List',
-      'listCount': '5',
-      'details': [
-        {'name': 'CL all list', 'phNo': '09780370347'},
-        {'name': 'myo lwin', 'phNo': '09780370347'}
-      ]
     },
     {
       'id': 1,
-      'value': 1,
-      'icon': const Icon(
-        Icons.format_list_bulleted,
-        color: AppColors.primaryColor,
-      ),
+      'icon': defaultIcon,
       'title': 'Default',
-      'listCount': '1',
-      'details': [
-        {'name': 'CL default', 'phNo': '09780370347'},
-        {'name': 'myo lwin', 'phNo': '09780370347'}
-      ]
     },
-    // {
-    //   'id': 2,
-    //   'value': 2,
-    //   'icon': const Icon(
-    //     Icons.format_list_bulleted,
-    //     color: AppColors.primaryColor,
-    //   ),
-    //   'title': 'Personal',
-    //   'details': [
-    //     {'name': 'CL Personal', 'phNo': '09780370347'},
-    //     {'name': 'myo lwin', 'phNo': '09780370347'}
-    //   ]
-    // },
-    // {
-    //   'id': 3,
-    //   'value': 3,
-    //   'icon': const Icon(
-    //     Icons.format_list_bulleted,
-    //     color: AppColors.primaryColor,
-    //   ),
-    //   'title': 'Shopping',
-    //   'listCount': '1',
-    //   'details': [
-    //     {'name': 'CL Shopping', 'phNo': '09780370347'},
-    //     {'name': 'myo lwin', 'phNo': '09780370347'}
-    //   ]
-    // },
-    // {
-    //   'id': 4,
-    //   'value': 4,
-    //   'icon': const Icon(
-    //     Icons.format_list_bulleted,
-    //     color: AppColors.primaryColor,
-    //   ),
-    //   'title': 'Wishlist',
-    //   'details': [
-    //     {'name': 'CL Wishlist', 'phNo': '09780370347'},
-    //     {'name': 'myo lwin', 'phNo': '09780370347'}
-    //   ]
-    // },
-    // {
-    //   'id': 5,
-    //   'value': 5,
-    //   'icon': const Icon(
-    //     Icons.format_list_bulleted,
-    //     color: AppColors.primaryColor,
-    //   ),
-    //   'title': 'Work',
-    //   'listCount': '1',
-    //   'details': [
-    //     {'name': 'CL Work', 'phNo': '09780370347'},
-    //     {'name': 'myo lwin', 'phNo': '09780370347'}
-    //   ]
-    // },
+    {
+      'id': 2,
+      'icon': defaultIcon,
+      'title': 'Personal',
+    },
+    {
+      'id': 3,
+      'icon': defaultIcon,
+      'title': 'Shopping',
+    },
+    {
+      'id': 4,
+      'icon': defaultIcon,
+      'title': 'Wishlist',
+      // 'details': [
+      //   {'name': 'CL Wishlist', 'phNo': '09780370347'},
+      //   {'name': 'myo lwin', 'phNo': '09780370347'}
+      // ]
+    },
+    {
+      'id': 5,
+      'icon': defaultIcon,
+      'title': 'Work',
+    },
   ];
 
   @override
   void initState() {
     super.initState();
     _changeListName('All List');
+    for(var item in popupItemsList){
+      /// Added List Count
+      if(item['details'] != null){
+        item['listCount'] = item['details'].length.toString();
+        selectedDetails = item['details'];
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    print(popupItemsList);
     return Scaffold(
       appBar: AppBar(
         title: PopupMenuButton(
@@ -229,7 +197,34 @@ class _HomeScreenState extends State<HomeScreen> {
         ? const Center(child: Text('Nothing to do'))
       : ListViewWidget(
           selectedDetails: selectedDetails,
-      )
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColors.primaryColor,
+        tooltip: 'Increment',
+        onPressed: () async {
+          List<Map<String, dynamic>> updateList = List.from(popupItemsList)..removeWhere((item) => item['id'] == 0);
+
+          final result = await CustomNavigationRoute.router.push('/newTask',
+              extra: NewTaskRouteParameter(updateList),
+          );
+
+          if(result != null && result is Map<String, dynamic>){
+            setState(() {
+              for(var item in popupItemsList){
+                if(item['title'] == result['title']){
+                  item['id'] = popupItemsList.length + 1;
+                  item['icon'] = defaultIcon;
+                  item['title'] = result['title'];
+                  item['details'] ??= [];
+                  item['details'].add(result['newDetail']);
+                  item['listCount'] = item['details'].length.toString();
+                }
+              }
+            });
+          }
+        },
+        child: const Icon(Icons.add, color: Colors.white, size: AppDimens.iconLarge),
+      ),
     );
   }
 
@@ -237,7 +232,12 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       selectedPopUpName = listName;
       if(popupItemsList.first['title'] == listName){
-        selectedDetails = popupItemsList.first['details'] ?? [];
+        for(var item in popupItemsList){
+          if(item['details'] != null){
+            popupItemsList.first['listCount'] = item['details'].length.toString();
+            selectedDetails = item['details'];
+          }
+        }
       }
     });
   }
@@ -251,11 +251,7 @@ class _HomeScreenState extends State<HomeScreen> {
           callback: (String newListName) {
             popupItemsList.add({
               'id': popupItemsList.length + 1,
-              'value': 0,
-              'icon': const Icon(
-                Icons.format_list_bulleted,
-                color: AppColors.primaryColor,
-              ),
+              'icon': defaultIcon,
               'title': newListName,
               'details': []
             },);

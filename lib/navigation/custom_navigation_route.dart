@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:to_do_list/pages/new_task_screen.dart';
+import 'package:to_do_list/widgets/new_task_route_parameters.dart';
 
 import '../pages/home_screen.dart';
 
@@ -13,10 +15,17 @@ class CustomNavigationRoute {
     GoRoute(
       path: initRoute,
       builder: (BuildContext context, GoRouterState state) {
-        return HomeScreen();
+        return const HomeScreen();
       },
       routes: [
-
+        GoRoute(
+            path: '/newTask',
+          builder: (BuildContext context, GoRouterState state){
+              return NewTaskScreen(
+                arguments: state.extra as NewTaskRouteParameter
+              );
+          }
+        )
       ]
     )
   ]);

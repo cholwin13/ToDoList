@@ -1,15 +1,15 @@
-// import 'package:flutter/cupertino.dart';
 // import 'package:flutter/material.dart';
 // import 'package:to_do_list/navigation/custom_navigation_route.dart';
-// import 'package:to_do_list/resources/app_images.dart';
 // import 'package:to_do_list/resources/app_colors.dart';
 // import 'package:to_do_list/resources/app_dimens.dart';
 // import 'package:to_do_list/widgets/list_view_widget.dart';
+// import 'package:to_do_list/widgets/new_task_route_parameters.dart';
 //
-// import '../widgets/custom_text_form_field.dart';
+// import '../widgets/new_list_dialog.dart';
 //
 // class HomeScreen extends StatefulWidget {
-//   const HomeScreen({super.key});
+//   final List? callBackArguments;
+//   const HomeScreen({super.key, this.callBackArguments});
 //
 //   @override
 //   State<HomeScreen> createState() => _HomeScreenState();
@@ -21,7 +21,7 @@
 //   TextEditingController newListController = TextEditingController();
 //   List selectedDetails = [];
 //
-//   List popupItemsList = [
+//   List<Map<String, dynamic>> popupItemsList = [
 //     {
 //       'id': 0,
 //       'value': 0,
@@ -30,23 +30,8 @@
 //         color: AppColors.primaryColor,
 //       ),
 //       'title': 'All List',
-//       'listCount': '5',
 //       'details': [
 //         {'name': 'CL all list', 'phNo': '09780370347'},
-//         {'name': 'myo lwin', 'phNo': '09780370347'}
-//       ]
-//     },
-//     {
-//       'id': 1,
-//       'value': 1,
-//       'icon': const Icon(
-//         Icons.format_list_bulleted,
-//         color: AppColors.primaryColor,
-//       ),
-//       'title': 'Default',
-//       'listCount': '1',
-//       'details': [
-//         {'name': 'CL default', 'phNo': '09780370347'},
 //         {'name': 'myo lwin', 'phNo': '09780370347'}
 //       ]
 //     },
@@ -58,145 +43,148 @@
 //         color: AppColors.primaryColor,
 //       ),
 //       'title': 'Personal',
-//       'details': [
-//         {'name': 'CL Personal', 'phNo': '09780370347'},
-//         {'name': 'myo lwin', 'phNo': '09780370347'}
-//       ]
-//     },
-//     {
-//       'id': 3,
-//       'value': 3,
-//       'icon': const Icon(
-//         Icons.format_list_bulleted,
-//         color: AppColors.primaryColor,
-//       ),
-//       'title': 'Shopping',
-//       'listCount': '1',
-//       'details': [
-//         {'name': 'CL Shopping', 'phNo': '09780370347'},
-//         {'name': 'myo lwin', 'phNo': '09780370347'}
-//       ]
-//     },
-//     {
-//       'id': 4,
-//       'value': 4,
-//       'icon': const Icon(
-//         Icons.format_list_bulleted,
-//         color: AppColors.primaryColor,
-//       ),
-//       'title': 'Wishlist',
-//       'details': [
-//         {'name': 'CL Wishlist', 'phNo': '09780370347'},
-//         {'name': 'myo lwin', 'phNo': '09780370347'}
-//       ]
-//     },
-//     {
-//       'id': 5,
-//       'value': 5,
-//       'icon': const Icon(
-//         Icons.format_list_bulleted,
-//         color: AppColors.primaryColor,
-//       ),
-//       'title': 'Work',
-//       'listCount': '1',
-//       'details': [
-//         {'name': 'CL Work', 'phNo': '09780370347'},
-//         {'name': 'myo lwin', 'phNo': '09780370347'}
-//       ]
 //     },
 //   ];
 //
 //   @override
+//   void initState() {
+//     super.initState();
+//     _changeListName('All List');
+//     for(var item in popupItemsList){
+//       if(item['details'] != null){
+//         item['listCount'] = item['details'].length.toString();
+//       }
+//     }
+//   }
+//
+//   @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
-//         appBar: AppBar(
-//           title: PopupMenuButton(
-//             itemBuilder: (context) {
-//               return [
+//       appBar: AppBar(
+//         title: PopupMenuButton(
+//           initialValue: 'All List',
+//           itemBuilder: (context) {
+//             return [
+//               for (int i = 0; i < popupItemsList.length; i++)
 //                 PopupMenuItem(
-//                     child: TextButton(
-//                       onPressed: () {
-//                         Navigator.pop(context);
-//                         _showDialog(context);
-//                       },
-//                       child: const Row(
-//                         children: [
-//                           Padding(
-//                             padding: EdgeInsets.only(right: 10),
-//                             child: Icon(
-//                               Icons.playlist_add_outlined,
-//                               color: AppColors.grayColor,
-//                             ),
-//                           ),
-//                           Text(
-//                             'New List',
-//                             style: TextStyle(
-//                                 color: AppColors.grayColor,
-//                                 fontSize: AppDimens.fontSmall3X),
-//                           )
-//                         ],
-//                       ),
-//                     )),
-//               ];
-//             },
-//           ),
+//                   onTap: () {
+//                     setState(() {
+//                       selectedDetails = popupItemsList[i]['details'] ?? [];
+//                     });
+//                   },
+//                   value: popupItemsList[i]['title'],
+//                   child: ListTile(
+//                     leading: popupItemsList[i]['icon'],
+//                     title: Text(
+//                       popupItemsList[i]['title'],
+//                       style: const TextStyle(
+//                           color: AppColors.primaryColor,
+//                           fontSize: AppDimens.fontSmall3X),
+//                     ),
+//                     trailing: popupItemsList[i]['listCount'] != null
+//                         ? Text(
+//                       popupItemsList[i]['listCount'],
+//                       style: const TextStyle(color: AppColors.errorColor),
+//                     )
+//                         : const Text(''),
+//                   ),
+//                 ),
+//             ];
+//           },
 //         ),
-//         body: selectedDetails.isEmpty
-//             ? const Center(child: Text('List is Empty'))
-//             : ListViewWidget(
-//           selectedDetails: selectedDetails,
-//         )
+//       ),
+//       body: selectedDetails.isEmpty
+//           ? const Center(child: Text('Nothing to do'))
+//           : ListViewWidget(
+//         selectedDetails: selectedDetails,
+//       ),
+//       floatingActionButton: FloatingActionButton(
+//         backgroundColor: AppColors.primaryColor,
+//         tooltip: 'Increment',
+//         onPressed: (){
+//           List<Map<String, dynamic>> updateList = List.from(popupItemsList)..removeWhere((item) => item['id'] == 0);
+//           CustomNavigationRoute.router.push('/newTask',
+//             extra: NewTaskRouteParameter(updateList),
+//           );
+//         },
+//         child: const Icon(Icons.add, color: Colors.white, size: AppDimens.iconLarge),
+//       ),
 //     );
 //   }
 //
+//   _changeListName(String listName) {
+//     setState(() {
+//       selectedPopUpName = listName;
+//       if(popupItemsList.first['title'] == listName){
+//         if(popupItemsList.first['details'] != null){
+//           selectedDetails = popupItemsList.first['details'] ?? [];
+//         }
+//       }
+//     });
+//   }
+// }
 //
-//   _showDialog(BuildContext context) {
-//     showDialog(
-//         context: context,
-//         builder: (BuildContext context) {
-//           return Form(
-//             key: formKey,
-//             child: AlertDialog(
-//               shape: const RoundedRectangleBorder(
-//                 borderRadius:
-//                 BorderRadius.all(Radius.circular(AppDimens.borderRadius)),
-//               ),
-//               title: const Text(
-//                 "New List",
-//                 style: TextStyle(
-//                     color: AppColors.primaryColor,
-//                     fontSize: AppDimens.fontMedium),
-//               ),
-//               content: CustomTextFormFieldWidget(
-//                 textController: newListController,
-//                 validator: validateNewList,
+//
+// =================
+//
+// class NewTaskScreen extends StatefulWidget {
+//   final NewTaskRouteParameter arguments;
+//   const NewTaskScreen({super.key, required this.arguments});
+//
+//   @override
+//   State<NewTaskScreen> createState() => _NewTaskScreenState();
+// }
+//
+// class _NewTaskScreenState extends State<NewTaskScreen> {
+//   final formKey = GlobalKey<FormState>();
+//   late String selectedList;
+//
+//   @override
+//   void initState() {
+//     selectedList = widget.arguments.popupItemsList[0]['title'];
+//     super.initState();
+//   }
+//   @override
+//   Widget build(BuildContext context) {
+//     TextEditingController newTaskController = TextEditingController();
+//
+//     String? validateNewTask(value) {
+//       if (value!.isEmpty) {
+//         return 'Enter Text!!';
+//       } else {
+//         return null;
+//       }
+//     }
+//
+//     return Scaffold(
+//       body: Padding(
+//         padding: const EdgeInsets.all(AppDimens.paddingLarge),
+//         child: Form(
+//           key: formKey,
+//           child: Column(
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             children: [
+//               CustomTextFormFieldWidget(
+//                 textController: newTaskController,
+//                 validator: validateNewTask,
 //                 textInputType: TextInputType.text,
 //                 hintTxt: 'AA',
 //               ),
-//               actions: [
-//                 TextButton(
-//                     onPressed: () {
-//                       Navigator.of(context).pop();
-//                     },
-//                     child: const Text(
-//                       "CANCEL",
-//                       style: TextStyle(
-//                           color: AppColors.primaryColor,
-//                           fontSize: AppDimens.fontMedium),
-//                     )),
-//                 TextButton(
-//                     onPressed: () {
-//                       _submit();
-//                     },
-//                     child: const Text(
-//                       "ADD",
-//                       style: TextStyle(
-//                           color: AppColors.primaryColor,
-//                           fontSize: AppDimens.fontMedium),
-//                     ))
-//               ],
-//             ),
-//           );
-//         });
+//             ],
+//           ),
+//         ),
+//       ),
+//       floatingActionButton: FloatingActionButton(
+//         backgroundColor: AppColors.primaryColor,
+//         onPressed: (){
+//           if(formKey.currentState!.validate()){
+//             CustomNavigationRoute.router.push('/',
+//                 extra: []);
+//           }
+//         },
+//         child: const Icon(Icons.check, color: Colors.white, size: AppDimens.iconLarge),
+//       ),
+//     );
 //   }
 // }
+//

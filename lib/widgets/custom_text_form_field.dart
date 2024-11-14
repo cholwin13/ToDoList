@@ -78,6 +78,10 @@ class CustomTextFormFieldWidget extends StatelessWidget {
       onChanged: onChanged,
       controller: textController,
       readOnly: readOnlyValue,
+      style: const TextStyle(
+        color: AppColors.primaryColor
+      ),
+      cursorColor: AppColors.primaryColor,
     );
   }
 }
