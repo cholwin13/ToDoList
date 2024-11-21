@@ -4,6 +4,7 @@ import 'package:to_do_list/resources/app_dimens.dart';
 import '../navigation/custom_navigation_route.dart';
 import '../resources/app_colors.dart';
 import '../widgets/custom_text_form_field.dart';
+import '../widgets/new_list_dialog.dart';
 import '../widgets/new_task_route_parameters.dart';
 
 class NewTaskScreen extends StatefulWidget {
@@ -16,7 +17,16 @@ class NewTaskScreen extends StatefulWidget {
 
 class _NewTaskScreenState extends State<NewTaskScreen> {
   final formKey = GlobalKey<FormState>();
+  final dialogListFormKey = GlobalKey<FormState>();
   late String selectedList;
+  late List newPopupItemList;
+
+  TextEditingController newListController = TextEditingController();
+
+  static const Icon defaultIcon = Icon(
+    Icons.home,
+    color: AppColors.primaryColor,
+  );
 
   @override
   void initState() {
@@ -37,6 +47,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
     }
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text('New Task'),
         titleTextStyle: const TextStyle(
@@ -117,7 +128,9 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                     ),
                   ),
                   const SizedBox(width: AppDimens.paddingLarge),
-                  const Icon(Icons.format_list_bulleted, color: AppColors.primaryColor,)
+                  IconButton(onPressed: (){
+                    _showDialog(context);
+                  }, icon: const Icon(Icons.format_list_bulleted, color: AppColors.primaryColor,))
                 ],
               ),
             ],
@@ -132,7 +145,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
             CustomNavigationRoute.router.pop(
               {
                 'title': selectedList,
-                'newDetail': {'name': 'Myo Lwin Oo', 'phNo': '09986560228'},
+                'newDetail': {'name': newTaskController.text, 'phNo': '09986560228', 'isFinish': false},
               }
             );
           }
@@ -141,4 +154,26 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
       ),
     );
   }
+
+  _showDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => NewListDialog(
+          controller: newListController,
+          formKey: dialogListFormKey,
+          callback: (String newListName) {
+            setState(() {
+             widget.arguments.popupItemsList.add({
+                'id':  widget.arguments.popupItemsList.length + 1,
+                'icon': defaultIcon,
+                'title': newListName,
+                'details': []
+              },);
+            });
+            newPopupItemList = widget.arguments.popupItemsList;
+          },
+        )
+    );
+  }
+
 }

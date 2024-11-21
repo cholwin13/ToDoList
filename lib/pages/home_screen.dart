@@ -19,6 +19,11 @@ class _HomeScreenState extends State<HomeScreen> {
   String selectedPopUpName = 'All List';
   TextEditingController newListController = TextEditingController();
   List selectedDetails = [];
+  bool isUpdated = false;
+  String finishedCount = "";
+
+  List<dynamic> _isChecked = [];
+  List<dynamic> finishedList = [];
 
   static const Icon defaultIcon = Icon(
     Icons.home,
@@ -49,21 +54,44 @@ class _HomeScreenState extends State<HomeScreen> {
       'icon': defaultIcon,
       'title': 'Shopping',
     },
-    {
-      'id': 4,
-      'icon': defaultIcon,
-      'title': 'Wishlist',
-      // 'details': [
-      //   {'name': 'CL Wishlist', 'phNo': '09780370347'},
-      //   {'name': 'myo lwin', 'phNo': '09780370347'}
-      // ]
-    },
-    {
-      'id': 5,
-      'icon': defaultIcon,
-      'title': 'Work',
-    },
+    // {
+    //   'id': 4,
+    //   'icon': defaultIcon,
+    //   'title': 'Wishlist',
+    //   // 'details': [
+    //   //   {'name': 'CL Wishlist', 'phNo': '09780370347'},
+    //   //   {'name': 'myo lwin', 'phNo': '09780370347'}
+    //   // ]
+    // },
+    // {
+    //   'id': 5,
+    //   'icon': defaultIcon,
+    //   'title': 'Work',
+    // },
   ];
+
+  void updateCheckedList(List<dynamic> checkList) {
+    setState(() {
+      _isChecked = checkList;
+      finishedList = _isChecked.where((item) => item['isFinish'] == true).toList();
+      finishedCount = finishedList.isNotEmpty ? finishedList.length.toString() : "";
+
+      print("Is check --> ${_isChecked}");
+
+      // for(var popupItem in popupItemsList){
+      //   if(popupItem['details'] != null){
+      //     List<dynamic> unfinishedItems = _isChecked.where((item) => item['isFinish'] == false).toList();
+      //
+      //     for (var item in unfinishedItems) {
+      //       if (!popupItem['details'].contains(item)) {
+      //         popupItem['details'].add(item);
+      //       }
+      //     }
+      //   }
+      // }
+
+    });
+  }
 
   @override
   void initState() {
@@ -109,29 +137,45 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     trailing: popupItemsList[i]['listCount'] != null
                         ? Text(
-                            popupItemsList[i]['listCount'],
-                            style: const TextStyle(color: AppColors.errorColor),
-                          )
+                      popupItemsList[i]['listCount'],
+                      style: const TextStyle(color: AppColors.errorColor),
+                    )
                         : const Text(''),
                   ),
                 ),
-              const PopupMenuItem(
+
+              PopupMenuItem(
+                  onTap: (){
+                    setState(() {
+                      selectedDetails = finishedList.isNotEmpty ? finishedList : [];
+                      // _isChecked.removeWhere((item) => item['isFinish'] == true);
+
+                      // for (var popupItem in popupItemsList) {
+                      //   if (popupItem['details'] != null) {
+                      //     popupItem['details'] = popupItem['details']
+                      //         .where((item) => item['isFinish'] != true)
+                      //         .toList();
+                      //   }
+                      // }
+                    });
+                  },
+                  value: 'Finished',
                   child: ListTile(
-                leading: Icon(
-                  Icons.check_circle_rounded,
-                  color: AppColors.primaryColor,
-                ),
-                title: Text(
-                  'Finished',
-                  style: TextStyle(
+                    leading: const Icon(
+                      Icons.check_circle_rounded,
                       color: AppColors.primaryColor,
-                      fontSize: AppDimens.fontSmall3X),
-                ),
-                trailing: Text(
-                  '3',
-                  style: TextStyle(color: AppColors.errorColor),
-                ),
-              )),
+                    ),
+                    title: const Text(
+                      'Finished',
+                      style: TextStyle(
+                          color: AppColors.primaryColor,
+                          fontSize: AppDimens.fontSmall3X),
+                    ),
+                    trailing: Text(
+                      finishedCount,
+                      style: TextStyle(color: AppColors.errorColor),
+                    ),
+                  )),
               PopupMenuItem(
                   child: TextButton(
                 onPressed: () {
@@ -197,19 +241,21 @@ class _HomeScreenState extends State<HomeScreen> {
         ? const Center(child: Text('Nothing to do'))
       : ListViewWidget(
           selectedDetails: selectedDetails,
+        callBackCheckedList: updateCheckedList,
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.primaryColor,
-        tooltip: 'Increment',
+        tooltip: 'Add',
         onPressed: () async {
           List<Map<String, dynamic>> updateList = List.from(popupItemsList)..removeWhere((item) => item['id'] == 0);
 
           final result = await CustomNavigationRoute.router.push('/newTask',
-              extra: NewTaskRouteParameter(updateList),
+            extra:  NewTaskRouteParameter(popupItemsList: updateList)
           );
 
           if(result != null && result is Map<String, dynamic>){
             setState(() {
+              bool isUpdated = false;
               for(var item in popupItemsList){
                 if(item['title'] == result['title']){
                   item['id'] = popupItemsList.length + 1;
@@ -218,8 +264,34 @@ class _HomeScreenState extends State<HomeScreen> {
                   item['details'] ??= [];
                   item['details'].add(result['newDetail']);
                   item['listCount'] = item['details'].length.toString();
+
+                  isUpdated = true;
+
+                  break;
                 }
               }
+
+              if(!isUpdated){
+                popupItemsList.add({
+                  'id': popupItemsList.length + 1,
+                  'icon': defaultIcon,
+                  'title': result['title'],
+                  'details': [
+                    result['newDetail']
+                  ],
+                  'listCount': '1'
+                });
+              }
+
+              if(popupItemsList[0]['title'] == 'All List'){
+                popupItemsList[0]['id'] = 0;
+                popupItemsList[0]['icon'] = defaultIcon;
+                popupItemsList[0]['title'] = popupItemsList[0]['title'];
+                popupItemsList[0]['details'] ??= [];
+                popupItemsList[0]['details'].add(result['newDetail']);
+                popupItemsList[0]['listCount'] = popupItemsList[0]['details'].length.toString();
+              }
+
             });
           }
         },
@@ -231,14 +303,14 @@ class _HomeScreenState extends State<HomeScreen> {
   _changeListName(String listName) {
     setState(() {
       selectedPopUpName = listName;
-      if(popupItemsList.first['title'] == listName){
-        for(var item in popupItemsList){
-          if(item['details'] != null){
-            popupItemsList.first['listCount'] = item['details'].length.toString();
-            selectedDetails = item['details'];
-          }
-        }
-      }
+      // if(popupItemsList.first['title'] == listName){
+      //   for(var item in popupItemsList){
+      //     if(item['details'] != null){
+      //       popupItemsList.first['listCount'] = item['details'].length.toString();
+      //       selectedDetails = item['details'];
+      //     }
+      //   }
+      // }
     });
   }
 

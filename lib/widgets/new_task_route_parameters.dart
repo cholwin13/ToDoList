@@ -1,5 +1,6 @@
 class NewTaskRouteParameter {
   List popupItemsList;
+  Function(List)? callBackFinished;
 
-  NewTaskRouteParameter(this.popupItemsList);
+  NewTaskRouteParameter({required this.popupItemsList, this.callBackFinished});
 }
