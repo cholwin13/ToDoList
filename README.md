@@ -1,6 +1,7 @@
 # to_do_list
 
-To Do List Project
+development branch - use setState
+dev_provider - use provider
 
 ## Getting Started
 
