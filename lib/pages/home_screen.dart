@@ -76,20 +76,23 @@ class _HomeScreenState extends State<HomeScreen> {
       finishedList = _isChecked.where((item) => item['isFinish'] == true).toList();
       finishedCount = finishedList.isNotEmpty ? finishedList.length.toString() : "";
 
-      print("Is check --> ${_isChecked}");
-
-      // for(var popupItem in popupItemsList){
-      //   if(popupItem['details'] != null){
-      //     List<dynamic> unfinishedItems = _isChecked.where((item) => item['isFinish'] == false).toList();
+      // List<dynamic> unfinishedList = _isChecked.where((item) => item['isFinish'] == false).toList();
       //
-      //     for (var item in unfinishedItems) {
+      // for (var popupItem in popupItemsList) {
+      //   if (popupItem['details'] != null) {
+      //     popupItem['details'] = popupItem['details']
+      //         .where((item) => item['isFinish'] != true)
+      //         .toList();
+      //
+      //     for (var item in unfinishedList) {
       //       if (!popupItem['details'].contains(item)) {
       //         popupItem['details'].add(item);
       //       }
       //     }
+      //
+      //     popupItem['listCount'] = popupItem['details'].length.toString();
       //   }
       // }
-
     });
   }
 
@@ -148,15 +151,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   onTap: (){
                     setState(() {
                       selectedDetails = finishedList.isNotEmpty ? finishedList : [];
-                      // _isChecked.removeWhere((item) => item['isFinish'] == true);
-
-                      // for (var popupItem in popupItemsList) {
-                      //   if (popupItem['details'] != null) {
-                      //     popupItem['details'] = popupItem['details']
-                      //         .where((item) => item['isFinish'] != true)
-                      //         .toList();
-                      //   }
-                      // }
                     });
                   },
                   value: 'Finished',
@@ -303,14 +297,6 @@ class _HomeScreenState extends State<HomeScreen> {
   _changeListName(String listName) {
     setState(() {
       selectedPopUpName = listName;
-      // if(popupItemsList.first['title'] == listName){
-      //   for(var item in popupItemsList){
-      //     if(item['details'] != null){
-      //       popupItemsList.first['listCount'] = item['details'].length.toString();
-      //       selectedDetails = item['details'];
-      //     }
-      //   }
-      // }
     });
   }
 
